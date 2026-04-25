@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">  
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Báo Giá Xây Dựng – UNIDECO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google Sans Flex:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+// ── SEND QUOTE ───────────────────────────────────────────
+async function sendQuote() {
+  const data = window._quoteData;
+  if(!data){alert('Vui lòng tính báo giá trước!');return;}
+  const btn = document.getElementById('btnSend');
+  const btnTxt = document.getElementById('sendBtnTxt');
+  const status = document.getElementById('sendStatus');
+  btn.disabled = true;
+  btnTxt.textContent = '⏳ Đang gửi...';
+  status.style.display = 'none';
+  status.className = '';
+
+  let sheetsOk = false, emailOk = false;
+
+  // ── Google Sheets ──
+  try {
+    const resp = await fetch('https://script.google.com/macros/s/AKfycbygX2oxNZydIz-ej683tZmdBls4qleir8SRI7EOnyplaEDV7vEUYFZ866JzZNBA9gmWCw/exec', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    });
+    sheetsOk = true;
+  } catch(e) {
+    console.error('Sheets error:', e);
+  }
+
+  // ── EmailJS ──
+  try {
+    await emailjs.send('service_jl1tqdp', 'template_yteijdl', {
+      from_name:  data.name,
+      phone:      data.phone,
+      model:      data.model,
+      area:       data.area,
+      services:   data.services,
+      thietke:    data.thietke,
+      tho:        data.tho,
+      hoanthien:  data.hoanthien,
+      total:      data.total,
+      time:       data.time
+    });
+    emailOk = true;
+  } catch(e) {
+    console.error('EmailJS error:', e);
+  }
+
+  // ── Show result ──
+  status.style.display = 'block';
+  if(sheetsOk && emailOk) {
+    status.textContent = '✅ Gửi thành công! Dữ liệu đã lưu vào Google Sheets và email thông báo đã được gửi.';
+    status.classList.add('send-ok');
+    btnTxt.textContent = '✅ Đã gửi';
+  } else if(sheetsOk) {
+    status.textContent = '⚠ Đã lưu Google Sheets nhưng email gặp lỗi. Vui lòng kiểm tra cấu hình EmailJS.';
+    status.classList.add('send-err');
+    btn.disabled = false;
+    btnTxt.textContent = '📤 Thử lại';
+  } else if(emailOk) {
+    status.textContent = '⚠ Email đã gửi nhưng Google Sheets gặp lỗi. Vui lòng kiểm tra Apps Script.';
+    status.classList.add('send-err');
+    btn.disabled = false;
+    btnTxt.textContent = '📤 Thử lại';
+  } else {
+    status.textContent = '❌ Gửi thất bại cả 2 kênh. Vui lòng kiểm tra kết nối internet và thử lại.';
+    status.classList.add('send-err');
+    btn.disabled = false;
+    btnTxt.textContent = '📤 Thử lại';
+  }
+  status.scrollIntoView({behavior:'smooth',block:'center'});
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+</head>
+<body>
+
+<header class="header">
+  <a href="#" class="logo">
+    <!-- <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+      <rect width="36" height="36" rx="8" fill="#002745"/>
+      <path d="M8 10 L8 20 Q8 27 18 27 Q28 27 28 20 L28 10" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <path d="M12 10 L12 19 Q12 23 18 23 Q24 23 24 19 L24 10" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      <rect x="10" y="28.5" width="16" height="2" rx="1" fill="white" opacity="0.6"/>
+    </svg>  -->
+    <div>
+      <div class="logo-text">UNIDECO</div>
+      <div class="logo-sub">Giải pháp xây nhà toàn diện</div>
+    </div>
+  </a>
+  <button class="theme-btn" id="themeBtn">
+    <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+  </button>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">🏗️ Công cụ báo giá tức thì</div>
+    <h1>Báo Giá Xây Dựng<br>Nhanh &amp; Minh Bạch</h1>
+    <p>Nhập thông tin công trình, chọn gói dịch vụ - nhận ngay tổng dự toán từ UNIDECO.</p>
+  </div>
+</section>
+
+<main class="main">
+
+  <!-- STEP 1 -->
+  <div class="step-card">
+    <div class="step-hd">
+      <div class="step-num">1</div>
+      <div><div class="step-title">Thông tin khách hàng</div><div class="step-sub">Để UNIDECO liên hệ gửi báo giá chính thức</div></div>
+    </div>
+    <div class="step-body">
+      <div class="form-grid">
+        <div class="field">
+          <label for="fullname">Họ và tên <span style="color:var(--error)">*</span></label>
+          <input type="text" id="fullname" placeholder="Nguyễn Văn A" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="phone">Số điện thoại <span style="color:var(--error)">*</span></label>
+          <input type="tel" id="phone" placeholder="0901 234 567" autocomplete="tel">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step-card">
+    <div class="step-hd">
+      <div class="step-num">2</div>
+      <div><div class="step-title">Chọn mô hình công trình</div><div class="step-sub">Loại công trình ảnh hưởng đến đơn giá thiết kế</div></div>
+    </div>
+    <div class="step-body">
+      <div class="model-grid">
+        <label class="model-card" data-model="nha-pho">
+          <input type="radio" name="model" value="nha-pho">
+          <div class="model-icon">🏠</div>
+          <div class="model-name">Nhà phố / Nhà vườn</div>
+          
+        </label>
+        <label class="model-card" data-model="biet-thu">
+          <input type="radio" name="model" value="biet-thu">
+          <div class="model-icon">🏛️</div>
+          <div class="model-name">Biệt thự / Villa</div>
+          
+        </label>
+        <label class="model-card" data-model="can-ho">
+          <input type="radio" name="model" value="can-ho">
+          <div class="model-icon">🏢</div>
+          <div class="model-name">Căn hộ / Khách sạn</div>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step-card">
+    <div class="step-hd">
+      <div class="step-num">3</div>
+      <div><div class="step-title">Nhập thông số quy mô</div><div class="step-sub">Hệ thống tự tính tổng diện tích xây dựng</div></div>
+    </div>
+    <div class="step-body">
+      <div class="scale-grid">
+        <div class="field">
+          <label for="area">Diện tích sàn 1 tầng (m²) <span style="color:var(--error)">*</span></label>
+          <input type="number" id="area" placeholder="Ví dụ: 100" min="1" max="9999">
+          <div class="field-hint">Diện tích xây dựng thực tế mỗi sàn</div>
+        </div>
+        <div class="field">
+          <label for="floors">Số tầng (bao gồm hầm/tum) <span style="color:var(--error)">*</span></label>
+          <input type="number" id="floors" placeholder="Ví dụ: 4" min="1" max="99">
+          <div class="field-hint">Tính cả tầng hầm, tum, sân thượng có mái</div>
+        </div>
+      </div>
+      <div class="total-display">
+        <div>
+          <div class="total-lbl">Tổng diện tích xây dựng (S)</div>
+          <div class="total-val" id="totalAreaVal">— m²</div>
+        </div>
+        <div>
+          <div class="total-lbl">Công thức</div>
+          <div style="font-size:var(--tx-xs);color:var(--muted)" id="formulaVal">Nhập diện tích &amp; số tầng để tính</div>
+        </div>
+        <div class="total-note" id="condNote"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step-card">
+    <div class="step-hd">
+      <div class="step-num">4</div>
+      <div><div class="step-title">Chọn gói dịch vụ</div><div class="step-sub">Bật/tắt từng dịch vụ và chọn gói phù hợp</div></div>
+    </div>
+    <div class="step-body">
+
+      <!-- THIẾT KẾ -->
+      <div class="svc-section">
+        <div class="svc-toggle-row">
+          <div class="svc-toggle-label"><span>📐</span> Thiết kế</div>
+          <div class="toggle-right">
+            <!-- <span class="toggle-status on" id="status-thietke">Bật</span> -->
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-thietke" checked onchange="toggleService('thietke',this.checked)">
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+        <div class="svc-content" id="svc-thietke">
+
+          <!-- 3 lựa chọn chính -->
+          <div class="tk-grid" id="tk-main-grid">
+            <!-- Kiến Trúc -->
+            <div class="tk-card" id="tk-kt" onclick="selectTK('kt')">
+              <input type="checkbox" id="inp-kt">
+              <div class="tk-icon">🏗</div>
+              <div class="tk-name">Kiến Trúc</div>
+              <div class="tk-price" id="price-kt">200.000 đ/m²</div>
+              <div class="tk-badge">Chọn riêng lẻ</div>
+            </div>
+            <!-- Nội Thất -->
+            <div class="tk-card" id="tk-nt" onclick="selectTK('nt')">
+              <input type="checkbox" id="inp-nt">
+              <div class="tk-icon">🛋</div>
+              <div class="tk-name">Nội Thất</div>
+              <div class="tk-price" id="price-nt">200.000 đ/m²</div>
+              <div class="tk-badge">Chọn riêng lẻ</div>
+            </div>
+            <!-- Trọn Gói -->
+            <div class="tk-card tg-card" id="tk-tg" onclick="selectTK('tg')">
+              <input type="radio" id="inp-tg">
+              <div class="tk-icon">📦</div>
+              <div class="tk-name">Trọn Gói</div>
+              <!-- <div class="tk-price" id="price-tg">Tiết kiệm 30%</div> -->
+              <div class="tk-badge">Kiến Trúc & Nội Thất</div>
+            </div>
+          </div>
+
+          <!-- Trọn gói sub-options -->
+          <div class="tg-sub" id="tg-sub">
+            <div class="tg-sub-inner">
+              <div class="tg-sub-title">✦ Chọn mức Trọn gói</div>
+              <div class="tg-opts">
+                <div class="tg-opt" id="tg-tc" onclick="selectTGSub('tc')">
+                  <input type="radio" name="tg-sub" value="tc">
+                  <div class="tg-opt-name">Tiêu Chuẩn</div>
+                  <div class="tg-opt-price" id="tg-tc-price">280.000 đ/m²</div>
+                </div>
+                <div class="tg-opt" id="tg-cc" onclick="selectTGSub('cc')">
+                  <input type="radio" name="tg-sub" value="cc">
+                  <div class="tg-opt-name">Cao Cấp</div>
+                  <div class="tg-opt-price" id="tg-cc-price">350.000 đ/m²</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="coef-note" id="coef-note">⚠ Diện tích &lt; 160m² — Áp dụng hệ số 1.4 trên đơn giá thiết kế</div>
+          <div class="promo-note" id="promo-note"></div>
+
+        </div><!-- /svc-thietke -->
+      </div>
+
+      <hr class="svc-divider">
+
+      <!-- PHẦN THÔ -->
+      <div class="svc-section">
+        <div class="svc-toggle-row">
+          <div class="svc-toggle-label"><span>🧱</span> Thi công phần thô</div>
+          <div class="toggle-right">
+            <!-- <span class="toggle-status on" id="status-tho">Bật</span> -->
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-tho" checked onchange="toggleService('tho',this.checked)">
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+        <div class="svc-content" id="svc-tho">
+          <div class="pkg-grid">
+            <label class="pkg-card" onclick="selectPkg(this,'tho')">
+              <input type="radio" name="tho" value="coban">
+              <div class="pkg-name">Gói Tiêu Chuẩn</div>
+              <div class="pkg-price">3.800.000 đ/m²</div>
+              <div class="pkg-tag">Tiêu chuẩn</div>
+            </label>
+            <label class="pkg-card" onclick="selectPkg(this,'tho')">
+              <input type="radio" name="tho" value="caocap">
+              <div class="pkg-name">Gói Cao Cấp</div>
+              <div class="pkg-price">4.000.000 đ/m²</div>
+              <div class="pkg-tag">Cao cấp</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <hr class="svc-divider">
+
+      <!-- HOÀN THIỆN -->
+      <div class="svc-section">
+        <div class="svc-toggle-row">
+          <div class="svc-toggle-label"><span>🎨</span> Thi công hoàn thiện</div>
+          <div class="toggle-right">
+            <!-- <span class="toggle-status on" id="status-hoanthien">Bật</span> -->
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-hoanthien" checked onchange="toggleService('hoanthien',this.checked)">
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+        <div class="svc-content" id="svc-hoanthien">
+          <div class="pkg-grid">
+            <label class="pkg-card" onclick="selectPkg(this,'hoanthien')">
+              <input type="radio" name="hoanthien" value="coban">
+              <div class="pkg-name">Gói Tiêu Chuẩn</div>
+              <div class="pkg-price">2.800.000 đ/m²</div>
+              <div class="pkg-tag">Tiêu chuẩn</div>
+            </label>
+            <label class="pkg-card" onclick="selectPkg(this,'hoanthien')">
+              <input type="radio" name="hoanthien" value="caocap">
+              <div class="pkg-name">Gói Cao Cấp</div>
+              <div class="pkg-price">3.400.000 đ/m²</div>
+              <div class="pkg-tag">Cao cấp</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="err-msg" id="errMsg">
+    <strong>⚠ Vui lòng kiểm tra lại:</strong>
+    <ul class="err-list" id="errList"></ul>
+  </div>
+
+  <button type="button" class="btn btn-compute" onclick="computeQuote()">🧮 Tính Báo Giá Ngay</button>
+
+  <!-- RESULT -->
+  <div class="result-panel" id="resultPanel">
+    <div class="result-hd">
+      <h2>📋 Báo Giá Chi Tiết</h2>
+      <p id="resultDate"></p>
+    </div>
+    <div class="result-bd">
+      <div class="result-customer" id="resultCustomer"></div>
+      <table class="r-table">
+        <thead><tr><th>Hạng mục</th><th>Đơn giá</th><th>Diện tích</th><th style="text-align:right">Thành tiền</th></tr></thead>
+        <tbody id="resultBody"></tbody>
+        <tfoot>
+          <tr class="r-total-row">
+            <td colspan="3" style="font-weight:700">🏷 Tổng cộng (chưa VAT)</td>
+            <td class="r-amount" id="resultTotalCell">—</td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="r-grand">
+        <div class="r-grand-lbl">Tổng chi phí ước tính</div>
+        <div class="r-grand-val" id="resultGrand">—</div>
+      </div>
+      <div class="r-notes">
+        <p>⚠ <strong>Lưu ý:</strong> Đây là báo giá ước tính. Báo giá chính thức sẽ được xác nhận sau khi UNIDECO khảo sát thực tế.</p>
+        <!-- <p>📌 Điều kiện: Gói thô ≥ 350m², mỗi sàn ≥ 85m². Hoàn thiện ≥ 200m².</p>
+        <p>📐 Hệ số thiết kế: Diện tích &lt; 160m² nhân hệ số 1.4 trên đơn giá thiết kế.</p> -->
+        <p>🏆 Bảo hành: 20 năm kết cấu | 3 năm chống thấm | 1 năm bảo hành chung.</p>
+      </div>
+    </div>
+    <!-- SEND STATUS -->
+    <div id="sendStatus" style="display:none;margin:0 var(--s6);padding:var(--s3) var(--s5);border-radius:var(--r-lg);font-size:var(--tx-sm);font-weight:600;text-align:center"></div>
+
+    <div class="r-actions">
+      <button class="btn btn-primary" onclick="window.print()">🖨 In báo giá</button>
+      <button class="btn btn-send" id="btnSend" onclick="sendQuote()">
+        <span id="sendBtnTxt">📤 Gửi báo giá chi tiết</span>
+      </button>
+      <button class="btn btn-outline" onclick="resetForm()">🔄 Tính lại</button>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  📍 1230-1232 Phạm Hùng, P. Bà Rịa, TP. HCM &nbsp;|&nbsp;
+  📞 <a href="tel:0937384323">0937 384 323</a>
+  &nbsp;|&nbsp; © 2026 UNIDECO
+</footer>
+
+
+
+<!-- SEND OVERLAY -->
+<div id="sendOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,39,69,.55);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(3px)">
+  <div style="background:var(--surface);border-radius:var(--r-2xl);padding:var(--s10) var(--s12);text-align:center;max-width:360px;box-shadow:var(--sh-lg)">
+    <div id="overlayIcon" style="font-size:3rem;margin-bottom:var(--s4)">⏳</div>
+    <div id="overlayTitle" style="font-size:var(--tx-lg);font-weight:800;color:var(--primary);margin-bottom:var(--s2)">Đang gửi...</div>
+    <div id="overlayMsg" style="font-size:var(--tx-sm);color:var(--muted)">Vui lòng chờ trong giây lát</div>
+    <button id="overlayClose" style="display:none;margin-top:var(--s5)" class="btn btn-primary" onclick="closeOverlay()">Đóng</button>
+  </div>
+</div>
+
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
