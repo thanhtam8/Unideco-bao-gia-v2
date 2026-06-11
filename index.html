@@ -1,412 +1,323 @@
 <!DOCTYPE html>
-<html lang="vi" data-theme="light">  
+<html lang="vi" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Báo Giá Xây Dựng – UNIDECO</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Google Sans Flex:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
-// ── SEND QUOTE ───────────────────────────────────────────
-async function sendQuote() {
-  const data = window._quoteData;
-  if(!data){alert('Vui lòng tính báo giá trước!');return;}
-  const btn = document.getElementById('btnSend');
-  const btnTxt = document.getElementById('sendBtnTxt');
-  const status = document.getElementById('sendStatus');
-  btn.disabled = true;
-  btnTxt.textContent = '⏳ Đang gửi...';
-  status.style.display = 'none';
-  status.className = '';
-
-  let sheetsOk = false, emailOk = false;
-
-  // ── Google Sheets ──
-  try {
-    const resp = await fetch('https://script.google.com/macros/s/AKfycbygX2oxNZydIz-ej683tZmdBls4qleir8SRI7EOnyplaEDV7vEUYFZ866JzZNBA9gmWCw/exec', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(data)
-    });
-    sheetsOk = true;
-  } catch(e) {
-    console.error('Sheets error:', e);
-  }
-
-  // ── EmailJS ──
-  try {
-    await emailjs.send('service_jl1tqdp', 'template_yteijdl', {
-      from_name:  data.name,
-      phone:      data.phone,
-      model:      data.model,
-      area:       data.area,
-      services:   data.services,
-      thietke:    data.thietke,
-      tho:        data.tho,
-      hoanthien:  data.hoanthien,
-      total:      data.total,
-      time:       data.time
-    });
-    emailOk = true;
-  } catch(e) {
-    console.error('EmailJS error:', e);
-  }
-
-  // ── Show result ──
-  status.style.display = 'block';
-  if(sheetsOk && emailOk) {
-    status.textContent = '✅ Gửi thành công! Dữ liệu đã lưu vào Google Sheets và email thông báo đã được gửi.';
-    status.classList.add('send-ok');
-    btnTxt.textContent = '✅ Đã gửi';
-  } else if(sheetsOk) {
-    status.textContent = '⚠ Đã lưu Google Sheets nhưng email gặp lỗi. Vui lòng kiểm tra cấu hình EmailJS.';
-    status.classList.add('send-err');
-    btn.disabled = false;
-    btnTxt.textContent = '📤 Thử lại';
-  } else if(emailOk) {
-    status.textContent = '⚠ Email đã gửi nhưng Google Sheets gặp lỗi. Vui lòng kiểm tra Apps Script.';
-    status.classList.add('send-err');
-    btn.disabled = false;
-    btnTxt.textContent = '📤 Thử lại';
-  } else {
-    status.textContent = '❌ Gửi thất bại cả 2 kênh. Vui lòng kiểm tra kết nối internet và thử lại.';
-    status.classList.add('send-err');
-    btn.disabled = false;
-    btnTxt.textContent = '📤 Thử lại';
-  }
-  status.scrollIntoView({behavior:'smooth',block:'center'});
-}
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Báo Giá 2026 – UNIDECO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="Style.css"/>
 </head>
 <body>
-
+<!-- HEADER -->
 <header class="header">
-  <a href="#" class="logo">
-    <!-- <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-      <rect width="36" height="36" rx="8" fill="#002745"/>
-      <path d="M8 10 L8 20 Q8 27 18 27 Q28 27 28 20 L28 10" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-      <path d="M12 10 L12 19 Q12 23 18 23 Q24 23 24 19 L24 10" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-      <rect x="10" y="28.5" width="16" height="2" rx="1" fill="white" opacity="0.6"/>
-    </svg>  -->
+  <div class="site-logo">
+    <div class="site-logo-icon">🏗️</div>
     <div>
-      <div class="logo-text">UNIDECO</div>
-      <div class="logo-sub">Giải pháp xây nhà toàn diện</div>
+      <div class="site-logo-text">UNIDECO</div>
+      <div class="site-logo-sub">Thiết kế &amp; Xây dựng</div>
     </div>
-  </a>
-  <button class="theme-btn" id="themeBtn">
-    <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-  </button>
+  </div>
+  <div class="header-right">
+    <button class="theme-btn" onclick="toggleTheme()">🌙 Giao diện</button>
+  </div>
 </header>
 
-<section class="hero">
-  <div class="hero-content">
-    <div class="hero-badge">🏗️ Công cụ báo giá tức thì</div>
-    <h1>Báo Giá Xây Dựng<br>Nhanh &amp; Minh Bạch</h1>
-    <p>Nhập thông tin công trình, chọn gói dịch vụ - nhận ngay tổng dự toán từ UNIDECO.</p>
-  </div>
-</section>
-
-<main class="main">
-
-  <!-- STEP 1 -->
-  <div class="step-card">
-    <div class="step-hd">
-      <div class="step-num">1</div>
-      <div><div class="step-title">Thông tin khách hàng</div><div class="step-sub">Để UNIDECO liên hệ gửi báo giá chính thức</div></div>
-    </div>
-    <div class="step-body">
-      <div class="form-grid">
-        <div class="field">
-          <label for="fullname">Họ và tên <span style="color:var(--error)">*</span></label>
-          <input type="text" id="fullname" placeholder="Nguyễn Văn A" autocomplete="name">
-        </div>
-        <div class="field">
-          <label for="phone">Số điện thoại <span style="color:var(--error)">*</span></label>
-          <input type="tel" id="phone" placeholder="0901 234 567" autocomplete="tel">
-        </div>
-      </div>
-    </div>
+<!-- MAIN -->
+<div class="app-wrap">
+  <!-- PAGE HERO -->
+  <div class="page-hero">
+    <div class="page-hero-title">🧮 Báo Giá Xây Dựng 2026</div>
+    <div class="page-hero-sub">Nhập thông tin công trình — nhận ước tính chi phí ngay lập tức</div>
   </div>
 
-  <!-- STEP 2 -->
-  <div class="step-card">
-    <div class="step-hd">
-      <div class="step-num">2</div>
-      <div><div class="step-title">Chọn mô hình công trình</div><div class="step-sub">Loại công trình ảnh hưởng đến đơn giá thiết kế</div></div>
-    </div>
-    <div class="step-body">
-      <div class="model-grid">
-        <label class="model-card" data-model="nha-pho">
-          <input type="radio" name="model" value="nha-pho">
-          <div class="model-icon">🏠</div>
-          <div class="model-name">Nhà phố / Nhà vườn</div>
-          
-        </label>
-        <label class="model-card" data-model="biet-thu">
-          <input type="radio" name="model" value="biet-thu">
-          <div class="model-icon">🏛️</div>
-          <div class="model-name">Biệt thự / Villa</div>
-          
-        </label>
-        <label class="model-card" data-model="can-ho">
-          <input type="radio" name="model" value="can-ho">
-          <div class="model-icon">🏢</div>
-          <div class="model-name">Căn hộ / Khách sạn</div>
-        </label>
-      </div>
-    </div>
-  </div>
+  <!-- STEP INDICATOR -->
+  <nav class="step-indicator">
+    <div class="step-item active" id="nav-1"><span class="step-num">1</span><span class="step-label">Thông tin</span></div>
+    <div class="step-item" id="nav-2"><span class="step-num">2</span><span class="step-label">Công trình</span></div>
+    <div class="step-item" id="nav-3"><span class="step-num">3</span><span class="step-label">Quy mô</span></div>
+    <div class="step-item" id="nav-4"><span class="step-num">4</span><span class="step-label">Dịch vụ</span></div>
+  </nav>
 
-  <!-- STEP 3 -->
-  <div class="step-card">
-    <div class="step-hd">
-      <div class="step-num">3</div>
-      <div><div class="step-title">Nhập thông số quy mô</div><div class="step-sub">Hệ thống tự tính tổng diện tích xây dựng</div></div>
-    </div>
-    <div class="step-body">
-      <div class="scale-grid">
-        <div class="field">
-          <label for="area">Diện tích sàn 1 tầng (m²) <span style="color:var(--error)">*</span></label>
-          <input type="number" id="area" placeholder="Ví dụ: 100" min="1" max="9999">
-          <div class="field-hint">Diện tích xây dựng thực tế mỗi sàn</div>
-        </div>
-        <div class="field">
-          <label for="floors">Số tầng (bao gồm hầm/tum) <span style="color:var(--error)">*</span></label>
-          <input type="number" id="floors" placeholder="Ví dụ: 4" min="1" max="99">
-          <div class="field-hint">Tính cả tầng hầm, tum, sân thượng có mái</div>
-        </div>
-      </div>
-      <div class="total-display">
-        <div>
-          <div class="total-lbl">Tổng diện tích xây dựng (S)</div>
-          <div class="total-val" id="totalAreaVal">— m²</div>
-        </div>
-        <div>
-          <div class="total-lbl">Công thức</div>
-          <div style="font-size:var(--tx-xs);color:var(--muted)" id="formulaVal">Nhập diện tích &amp; số tầng để tính</div>
-        </div>
-        <div class="total-note" id="condNote"></div>
-      </div>
-    </div>
-  </div>
+  <div class="main-grid">
+    <div class="form-col">
 
-  <!-- STEP 4 -->
-  <div class="step-card">
-    <div class="step-hd">
-      <div class="step-num">4</div>
-      <div><div class="step-title">Chọn gói dịch vụ</div><div class="step-sub">Bật/tắt từng dịch vụ và chọn gói phù hợp</div></div>
-    </div>
-    <div class="step-body">
-
-      <!-- THIẾT KẾ -->
-      <div class="svc-section">
-        <div class="svc-toggle-row">
-          <div class="svc-toggle-label"><span>📐</span> Thiết kế</div>
-          <div class="toggle-right">
-            <!-- <span class="toggle-status on" id="status-thietke">Bật</span> -->
-            <label class="toggle-switch">
-              <input type="checkbox" id="toggle-thietke" checked onchange="toggleService('thietke',this.checked)">
-              <span class="toggle-track"></span>
-            </label>
+      <!-- STEP 1 -->
+      <div class="card" id="step-1">
+        <div class="card-head">
+          <div class="card-icon">👤</div>
+          <div class="card-head-info">
+            <div class="card-title">1. Thông Tin Khách Hàng</div>
+            <div class="card-sub">Dùng để liên hệ và lưu báo giá</div>
           </div>
         </div>
-        <div class="svc-content" id="svc-thietke">
-
-          <!-- 3 lựa chọn chính -->
-          <div class="tk-grid" id="tk-main-grid">
-            <!-- Kiến Trúc -->
-            <div class="tk-card" id="tk-kt" onclick="selectTK('kt')">
-              <input type="checkbox" id="inp-kt">
-              <div class="tk-icon">🏗</div>
-              <div class="tk-name">Kiến Trúc</div>
-              <div class="tk-price" id="price-kt">200.000 đ/m²</div>
-              <div class="tk-badge">Chọn riêng lẻ</div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="hoten">Họ và tên <span class="req">*</span></label>
+              <input id="hoten" class="form-input" type="text" placeholder="Nguyễn Văn A" oninput="updateSummary()"/>
             </div>
-            <!-- Nội Thất -->
-            <div class="tk-card" id="tk-nt" onclick="selectTK('nt')">
-              <input type="checkbox" id="inp-nt">
-              <div class="tk-icon">🛋</div>
-              <div class="tk-name">Nội Thất</div>
-              <div class="tk-price" id="price-nt">200.000 đ/m²</div>
-              <div class="tk-badge">Chọn riêng lẻ</div>
-            </div>
-            <!-- Trọn Gói -->
-            <div class="tk-card tg-card" id="tk-tg" onclick="selectTK('tg')">
-              <input type="radio" id="inp-tg">
-              <div class="tk-icon">📦</div>
-              <div class="tk-name">Trọn Gói</div>
-              <!-- <div class="tk-price" id="price-tg">Tiết kiệm 30%</div> -->
-              <div class="tk-badge">Kiến Trúc & Nội Thất</div>
+            <div class="form-group">
+              <label class="form-label" for="sdt">Số điện thoại <span class="req">*</span></label>
+              <input id="sdt" class="form-input" type="tel" placeholder="0912 345 678" oninput="updateSummary()"/>
             </div>
           </div>
+          <div style="margin-top:1rem" class="form-group">
+            <label class="form-label" for="email">Email <span class="req">*</span></label>
+            <input id="email" class="form-input" type="email" placeholder="email@example.com" oninput="updateSummary()"/>
+          </div>
+          <div id="err-khach" class="notice hidden">⚠️ Vui lòng nhập đầy đủ họ tên, số điện thoại và email.</div>
+        </div>
+      </div>
 
-          <!-- Trọn gói sub-options -->
-          <div class="tg-sub" id="tg-sub">
-            <div class="tg-sub-inner">
-              <div class="tg-sub-title">✦ Chọn mức Trọn gói</div>
-              <div class="tg-opts">
-                <div class="tg-opt" id="tg-tc" onclick="selectTGSub('tc')">
-                  <input type="radio" name="tg-sub" value="tc">
-                  <div class="tg-opt-name">Tiêu Chuẩn</div>
-                  <div class="tg-opt-price" id="tg-tc-price">280.000 đ/m²</div>
+      <!-- STEP 2 -->
+      <div class="card" id="step-2">
+        <div class="card-head">
+          <div class="card-icon accent">🏠</div>
+          <div class="card-head-info">
+            <div class="card-title">2. Chọn Mô Hình Công Trình</div>
+            <div class="card-sub">Chọn loại công trình phù hợp với dự án của bạn</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="option-grid">
+            <div class="option-card">
+              <input type="radio" id="ct-nv" name="loai_ct" value="nha-vuon" onchange="onCTChange()"/>
+              <label class="option-label" for="ct-nv">
+                <div class="option-icon-wrap">🏡</div>
+                <div><div class="option-name">Nhà Vườn</div><div class="option-desc">DT xây dựng ≥ 280m²</div></div>
+                <div class="option-check"></div>
+              </label>
+            </div>
+            <div class="option-card">
+              <input type="radio" id="ct-np" name="loai_ct" value="nha-pho" onchange="onCTChange()"/>
+              <label class="option-label" for="ct-np">
+                <div class="option-icon-wrap">🏘️</div>
+                <div><div class="option-name">Nhà Phố ≤ 3 tầng</div><div class="option-desc">DT xây dựng ≥ 300m²</div></div>
+                <div class="option-check"></div>
+              </label>
+            </div>
+            <div class="option-card">
+              <input type="radio" id="ct-dv" name="loai_ct" value="dich-vu" onchange="onCTChange()"/>
+              <label class="option-label" for="ct-dv">
+                <div class="option-icon-wrap">🏢</div>
+                <div><div class="option-name">Nhà Dịch Vụ ≥ 4 tầng</div><div class="option-desc">Văn phòng, khách sạn…</div></div>
+                <div class="option-check"></div>
+              </label>
+            </div>
+            <div class="option-card">
+              <input type="radio" id="ct-bt" name="loai_ct" value="biet-thu" onchange="onCTChange()"/>
+              <label class="option-label" for="ct-bt">
+                <div class="option-icon-wrap">🏰</div>
+                <div><div class="option-name">Biệt Thự</div><div class="option-desc">DT xây dựng ≥ 490m²</div></div>
+                <div class="option-check"></div>
+              </label>
+            </div>
+          </div>
+          <div id="ct-switch-notice" class="ct-notice hidden"></div>
+          <div id="err-ct" class="notice hidden">⚠️ Vui lòng chọn loại công trình.</div>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="card" id="step-3">
+        <div class="card-head">
+          <div class="card-icon">📐</div>
+          <div class="card-head-info">
+            <div class="card-title">3. Nhập Thông Số Quy Mô</div>
+            <div class="card-sub">Hệ thống sẽ tự tính tổng diện tích xây dựng S</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="dt-san">Diện tích sàn (As) <span class="req">*</span></label>
+              <div class="input-group">
+                <input id="dt-san" class="form-input" type="number" min="0" placeholder="100" oninput="onDimChange()"/>
+                <span class="input-unit">m²</span>
+              </div>
+              <span class="form-hint">As là diện tích sàn điển hình của một tầng</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="so-tang">Số tầng (n) <span class="req">*</span></label>
+              <div class="input-group">
+                <input id="so-tang" class="form-input" type="number" min="1" placeholder="3" oninput="onDimChange()"/>
+                <span class="input-unit">tầng</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-row" style="margin-top:1.1rem">
+            <div class="form-group">
+              <label class="form-label" for="loai-mong">Loại móng (k<sub>m</sub>)</label>
+              <select id="loai-mong" class="form-select" onchange="onDimChange()">
+                <option value="0">Không tính móng (+0)</option>
+                <option value="0.35" id="opt-mong-don">Móng đơn (×0.35)</option>
+                <option value="0.45" id="opt-mong-1p">Móng băng 1 phương (×0.45)</option>
+                <option value="0.7"  id="opt-mong-2p">Móng băng 2 phương (×0.70)</option>
+                <option value="0.6">Đài móng cọc (×0.60)</option>
+                <option value="0.65">Đài móng cọc nâng cao (×0.65)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="loai-mai">Loại mái (k<sub>r</sub>)</label>
+              <select id="loai-mai" class="form-select" onchange="onDimChange()">
+                <option value="0">Không tính mái (+0)</option>
+                <option value="0.55">Mái BTCT (×0.55)</option>
+                <option value="1">Mái ngói + BTCT xiên (×1)</option>
+                <option value="0.35">Mái tôn + máng xối (×0.35)</option>
+                <option value="0.2">Mái tôn chống nóng + máng xối (×0.2)</option>
+              </select>
+            </div>
+          </div>
+          <div id="calc-box" class="calc-box calc-hidden">
+            <div class="calc-box-title">📊 Tổng diện tích xây dựng</div>
+            <div class="calc-row"><span>Diện tích sàn (As × n)</span><span id="r-st">—</span></div>
+            <div class="calc-row" id="r-row-m"><span>Diện tích móng (As × k<sub>m</sub>)</span><span id="r-sm">—</span></div>
+            <div class="calc-row" id="r-row-r"><span>Diện tích mái (As × k<sub>r</sub>)</span><span id="r-sr">—</span></div>
+            <div class="calc-row total"><span>Tổng S</span><span id="r-total">—</span></div>
+          </div>
+          <div id="err-dim" class="notice hidden">⚠️ Vui lòng nhập diện tích sàn và số tầng lớn hơn 0.</div>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="card" id="step-4">
+        <div class="card-head">
+          <div class="card-icon accent">⚙️</div>
+          <div class="card-head-info">
+            <div class="card-title">4. Chọn Gói Dịch Vụ</div>
+            <div class="card-sub">Bật / tắt và chọn phương án cho từng gói</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="svc-grid">
+            <!-- Thiết Kế -->
+            <div class="svc-card svc-on" id="svc-card-tk">
+              <div class="svc-card-head">
+                <div class="svc-card-icon">🎨</div>
+                <div class="svc-card-info">
+                  <div class="svc-card-title">Thiết Kế</div>
+                  <div class="svc-card-sub">Tính theo As</div>
                 </div>
-                <div class="tg-opt" id="tg-cc" onclick="selectTGSub('cc')">
-                  <input type="radio" name="tg-sub" value="cc">
-                  <div class="tg-opt-name">Cao Cấp</div>
-                  <div class="tg-opt-price" id="tg-cc-price">350.000 đ/m²</div>
+                <div class="svc-toggle toggle-on" id="toggle-tk" onclick="toggleBlock('tk')">
+                  <div class="toggle-track"><div class="toggle-thumb"></div></div>
+                  <span class="toggle-label">ON</span>
+                </div>
+              </div>
+              <div class="tk-grid" id="pills-tk">
+                <div class="tk-col">
+                  <div class="tk-col-label">Đơn lẻ</div>
+                  <button class="pill-btn pill-btn-v" data-svc="tk" data-opt="kien-truc" onclick="pickPill(this)">
+                    <span class="pill-name">Kiến Trúc</span><span class="pill-price" id="px-tk-kt">—</span>
+                  </button>
+                  <button class="pill-btn pill-btn-v" data-svc="tk" data-opt="noi-that" onclick="pickPill(this)">
+                    <span class="pill-name">Nội Thất</span><span class="pill-price" id="px-tk-nt">—</span>
+                  </button>
+                </div>
+                <div class="tk-col-divider"></div>
+                <div class="tk-col">
+                  <div class="tk-col-label">Trọn gói</div>
+                  <button class="pill-btn pill-btn-v" data-svc="tk" data-opt="trong-goi-tc" onclick="pickPill(this)">
+                    <span class="pill-name">Tiêu Chuẩn</span><span class="pill-price" id="px-tk-tgtc">—</span>
+                  </button>
+                  <button class="pill-btn pill-btn-v" data-svc="tk" data-opt="trong-goi-nc" onclick="pickPill(this)">
+                    <span class="pill-name">Nâng Cao</span><span class="pill-price" id="px-tk-tgnc">—</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right column -->
+            <div class="svc-right-col">
+              <!-- Phần Thô -->
+              <div class="svc-card svc-off" id="svc-card-tho">
+                <div class="svc-card-head">
+                  <div class="svc-card-icon" style="background:linear-gradient(135deg,#3b5998,#4f6b8a)">🏗️</div>
+                  <div class="svc-card-info">
+                    <div class="svc-card-title">Phần Thô</div>
+                    <div class="svc-card-sub">Tính theo S</div>
+                  </div>
+                  <div class="svc-toggle" id="toggle-tho" onclick="toggleBlock('tho')">
+                    <div class="toggle-track"><div class="toggle-thumb"></div></div>
+                    <span class="toggle-label">OFF</span>
+                  </div>
+                </div>
+                <div id="tho-single" class="tho-single">
+                  <span class="tho-single-label">Đơn giá áp dụng</span>
+                  <span class="tho-single-price" id="px-tho-single">—</span>
+                </div>
+                <div id="tho-multi" class="pill-row" style="display:none">
+                  <button class="pill-btn" data-svc="tho" data-opt="tc" onclick="pickPill(this)">
+                    <span class="pill-name">Tiêu Chuẩn</span><span class="pill-price" id="px-tho-tc">—</span>
+                  </button>
+                  <button class="pill-btn" data-svc="tho" data-opt="nc" onclick="pickPill(this)">
+                    <span class="pill-name">Nâng Cao</span><span class="pill-price" id="px-tho-nc">—</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Hoàn Thiện -->
+              <div class="svc-card svc-off" id="svc-card-ht">
+                <div class="svc-card-head">
+                  <div class="svc-card-icon" style="background:linear-gradient(135deg,#6d28d9,#7c5cba)">✨</div>
+                  <div class="svc-card-info">
+                    <div class="svc-card-title">Hoàn Thiện</div>
+                    <div class="svc-card-sub">Tính theo As × n</div>
+                  </div>
+                  <div class="svc-toggle" id="toggle-ht" onclick="toggleBlock('ht')">
+                    <div class="toggle-track"><div class="toggle-thumb"></div></div>
+                    <span class="toggle-label">OFF</span>
+                  </div>
+                </div>
+                <div class="pill-row" id="pills-ht">
+                  <button class="pill-btn" data-svc="ht" data-opt="tc" onclick="pickPill(this)">
+                    <span class="pill-name">Tiêu Chuẩn</span><span class="pill-price" id="px-ht-tc">—</span>
+                  </button>
+                  <button class="pill-btn" data-svc="ht" data-opt="nc" onclick="pickPill(this)">
+                    <span class="pill-name">Nâng Cao</span><span class="pill-price" id="px-ht-nc">—</span>
+                  </button>
+                  <button class="pill-btn" id="pill-ht-bt" data-svc="ht" data-opt="bt" onclick="pickPill(this)" style="display:none">
+                    <span class="pill-name">Biệt Thự</span><span class="pill-price" id="px-ht-bt">—</span>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-
-          <div class="coef-note" id="coef-note">⚠ Diện tích &lt; 160m² — Áp dụng hệ số 1.4 trên đơn giá thiết kế</div>
-          <div class="promo-note" id="promo-note"></div>
-
-        </div><!-- /svc-thietke -->
-      </div>
-
-      <hr class="svc-divider">
-
-      <!-- PHẦN THÔ -->
-      <div class="svc-section">
-        <div class="svc-toggle-row">
-          <div class="svc-toggle-label"><span>🧱</span> Thi công phần thô</div>
-          <div class="toggle-right">
-            <!-- <span class="toggle-status on" id="status-tho">Bật</span> -->
-            <label class="toggle-switch">
-              <input type="checkbox" id="toggle-tho" checked onchange="toggleService('tho',this.checked)">
-              <span class="toggle-track"></span>
-            </label>
-          </div>
-        </div>
-        <div class="svc-content" id="svc-tho">
-          <div class="pkg-grid">
-            <label class="pkg-card" onclick="selectPkg(this,'tho')">
-              <input type="radio" name="tho" value="coban">
-              <div class="pkg-name">Gói Tiêu Chuẩn</div>
-              <div class="pkg-price">3.800.000 đ/m²</div>
-              <div class="pkg-tag">Tiêu chuẩn</div>
-            </label>
-            <label class="pkg-card" onclick="selectPkg(this,'tho')">
-              <input type="radio" name="tho" value="caocap">
-              <div class="pkg-name">Gói Cao Cấp</div>
-              <div class="pkg-price">4.000.000 đ/m²</div>
-              <div class="pkg-tag">Cao cấp</div>
-            </label>
-          </div>
+          <div id="err-svc" class="notice hidden">⚠️ Vui lòng bật ít nhất 1 gói dịch vụ và chọn phương án.</div>
         </div>
       </div>
 
-      <hr class="svc-divider">
+      <div class="submit-row">
+        <button class="btn-calc" onclick="tinhBaoGia()">🧮 TÍNH BÁO GIÁ</button>
+      </div>
+    </div>
 
-      <!-- HOÀN THIỆN -->
-      <div class="svc-section">
-        <div class="svc-toggle-row">
-          <div class="svc-toggle-label"><span>🎨</span> Thi công hoàn thiện</div>
-          <div class="toggle-right">
-            <!-- <span class="toggle-status on" id="status-hoanthien">Bật</span> -->
-            <label class="toggle-switch">
-              <input type="checkbox" id="toggle-hoanthien" checked onchange="toggleService('hoanthien',this.checked)">
-              <span class="toggle-track"></span>
-            </label>
-          </div>
+    <!-- SIDEBAR -->
+    <div class="summary-sticky">
+      <div class="summary-card">
+        <div class="summary-head">
+          <div class="summary-head-title">📋 Tóm Tắt Báo Giá</div>
+          <div class="summary-head-sub">Cập nhật thời gian thực</div>
         </div>
-        <div class="svc-content" id="svc-hoanthien">
-          <div class="pkg-grid">
-            <label class="pkg-card" onclick="selectPkg(this,'hoanthien')">
-              <input type="radio" name="hoanthien" value="coban">
-              <div class="pkg-name">Gói Tiêu Chuẩn</div>
-              <div class="pkg-price">2.800.000 đ/m²</div>
-              <div class="pkg-tag">Tiêu chuẩn</div>
-            </label>
-            <label class="pkg-card" onclick="selectPkg(this,'hoanthien')">
-              <input type="radio" name="hoanthien" value="caocap">
-              <div class="pkg-name">Gói Cao Cấp</div>
-              <div class="pkg-price">3.400.000 đ/m²</div>
-              <div class="pkg-tag">Cao cấp</div>
-            </label>
-          </div>
+        <div class="summary-body" id="summary-body">
+          <p class="sum-row-empty" style="padding:1rem 0">Nhập thông tin để xem ước tính chi phí.</p>
+        </div>
+        <div class="sum-note">⚠️ Báo giá mang tính tham khảo. Chưa bao gồm VAT.</div>
+        <div class="sum-actions">
+          <button class="btn-print" onclick="window.print()">🖨️ In báo giá</button>
         </div>
       </div>
-
     </div>
-  </div>
-
-  <div class="err-msg" id="errMsg">
-    <strong>⚠ Vui lòng kiểm tra lại:</strong>
-    <ul class="err-list" id="errList"></ul>
-  </div>
-
-  <button type="button" class="btn btn-compute" onclick="computeQuote()">🧮 Tính Báo Giá Ngay</button>
-
-  <!-- RESULT -->
-  <div class="result-panel" id="resultPanel">
-    <div class="result-hd">
-      <h2>📋 Báo Giá Chi Tiết</h2>
-      <p id="resultDate"></p>
-    </div>
-    <div class="result-bd">
-      <div class="result-customer" id="resultCustomer"></div>
-      <table class="r-table">
-        <thead><tr><th>Hạng mục</th><th>Đơn giá</th><th>Diện tích</th><th style="text-align:right">Thành tiền</th></tr></thead>
-        <tbody id="resultBody"></tbody>
-        <tfoot>
-          <tr class="r-total-row">
-            <td colspan="3" style="font-weight:700">🏷 Tổng cộng (chưa VAT)</td>
-            <td class="r-amount" id="resultTotalCell">—</td>
-          </tr>
-        </tfoot>
-      </table>
-      <div class="r-grand">
-        <div class="r-grand-lbl">Tổng chi phí ước tính</div>
-        <div class="r-grand-val" id="resultGrand">—</div>
-      </div>
-      <div class="r-notes">
-        <p>⚠ <strong>Lưu ý:</strong> Đây là báo giá ước tính. Báo giá chính thức sẽ được xác nhận sau khi UNIDECO khảo sát thực tế.</p>
-        <!-- <p>📌 Điều kiện: Gói thô ≥ 350m², mỗi sàn ≥ 85m². Hoàn thiện ≥ 200m².</p>
-        <p>📐 Hệ số thiết kế: Diện tích &lt; 160m² nhân hệ số 1.4 trên đơn giá thiết kế.</p> -->
-        <p>🏆 Bảo hành: 20 năm kết cấu | 3 năm chống thấm | 1 năm bảo hành chung.</p>
-      </div>
-    </div>
-    <!-- SEND STATUS -->
-    <div id="sendStatus" style="display:none;margin:0 var(--s6);padding:var(--s3) var(--s5);border-radius:var(--r-lg);font-size:var(--tx-sm);font-weight:600;text-align:center"></div>
-
-    <div class="r-actions">
-      <button class="btn btn-primary" onclick="window.print()">🖨 In báo giá</button>
-      <button class="btn btn-send" id="btnSend" onclick="sendQuote()">
-        <span id="sendBtnTxt">📤 Gửi báo giá chi tiết</span>
-      </button>
-      <button class="btn btn-outline" onclick="resetForm()">🔄 Tính lại</button>
-    </div>
-  </div>
-
-</main>
-
-<footer class="footer">
-  📍 1230-1232 Phạm Hùng, P. Bà Rịa, TP. HCM &nbsp;|&nbsp;
-  📞 <a href="tel:0937384323">0937 384 323</a>
-  &nbsp;|&nbsp; © 2026 UNIDECO
-</footer>
-
-
-
-<!-- SEND OVERLAY -->
-<div id="sendOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,39,69,.55);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(3px)">
-  <div style="background:var(--surface);border-radius:var(--r-2xl);padding:var(--s10) var(--s12);text-align:center;max-width:360px;box-shadow:var(--sh-lg)">
-    <div id="overlayIcon" style="font-size:3rem;margin-bottom:var(--s4)">⏳</div>
-    <div id="overlayTitle" style="font-size:var(--tx-lg);font-weight:800;color:var(--primary);margin-bottom:var(--s2)">Đang gửi...</div>
-    <div id="overlayMsg" style="font-size:var(--tx-sm);color:var(--muted)">Vui lòng chờ trong giây lát</div>
-    <button id="overlayClose" style="display:none;margin-top:var(--s5)" class="btn btn-primary" onclick="closeOverlay()">Đóng</button>
   </div>
 </div>
 
-
-  <script src="assets/js/main.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script type="text/javascript">
+  (function(){
+    emailjs.init({ publicKey: '8rtBuq7HHxnshoXOY' });
+  })();
+</script>
+<script src="App.js"></script>
 </body>
 </html>
